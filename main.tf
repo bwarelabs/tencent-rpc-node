@@ -24,9 +24,15 @@ resource "tencentcloud_instance" "rpc_node" {
   # instance_charge_type_prepaid_renew_flag = var.instance_charge_type_prepaid_renew_flag
 
   data_disks {
-    data_disk_type = var.data_disk_type
-    data_disk_size = var.system_disk_size
-    encrypt        = var.data_disk_encrypt
+    data_disk_type = var.ledger_disk_type
+    data_disk_size = var.ledger_disk_size
+    encrypt        = var.ledger_disk_encrypt
+  }
+
+  data_disks {
+    data_disk_type = var.accounts_disk_type
+    data_disk_size = var.accounts_disk_size
+    encrypt        = var.accounts_disk_encrypt
   }
 
   force_delete = var.force_delete

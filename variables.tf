@@ -109,21 +109,41 @@ variable "system_disk_size" {
   default     = 50
 }
 
-variable "data_disk_type" {
+# LEDGER DISK
+variable "ledger_disk_type" {
   type        = string
-  description = "The instace data disk type"
+  description = "The instace ledger disk type"
   default     = "CLOUD_PREMIUM"
 }
 
-variable "data_disk_size" {
+variable "ledger_disk_size" {
   type        = number
-  description = "The instace data disk size"
+  description = "The instace ledger disk size"
   default     = 50
 }
 
-variable "data_disk_encrypt" {
+variable "ledger_disk_encrypt" {
   type        = bool
-  description = "Enable data disk encryption"
+  description = "Enable ledger disk encryption"
+  default     = false
+}
+
+# ACCOUNTS DISK
+variable "accounts_disk_type" {
+  type        = string
+  description = "The instace accounts disk type"
+  default     = "CLOUD_PREMIUM"
+}
+
+variable "accounts_disk_size" {
+  type        = number
+  description = "The instace accounts disk size"
+  default     = 50
+}
+
+variable "accounts_disk_encrypt" {
+  type        = bool
+  description = "Enable accounts disk encryption"
   default     = false
 }
 
@@ -153,17 +173,60 @@ variable "solana_accounts_mount_point" {
 # SOLANA NETWORK DETAILS
 ################################################################################
 
-variable "solana_known_validators" {
-  type        = list(string)
-  description = "Solana known validators ids"
-  default = [
-    "5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on",
-    "dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs",
-    "eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ",
-    "7XSY3MrYnK8vq693Rju17bbPkCN3Z7KvvfvJx4kdrsSY",
-    "Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN",
-    "9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv"
-  ]
+
+// tat does not support list of objets, only single strings are supported
+variable "solana_known_validator1" {
+  type        = string
+  description = "Solana known validator id"
+  default     = "5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on"
+}
+
+variable "solana_known_validator2" {
+  type        = string
+  description = "Solana known validator id"
+  default     = "dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs"
+}
+
+variable "solana_known_validator3" {
+  type        = string
+  description = "Solana known validator id"
+  default     = "eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ"
+}
+
+variable "solana_known_validator4" {
+  type        = string
+  description = "Solana known validator id"
+  default     = "7XSY3MrYnK8vq693Rju17bbPkCN3Z7KvvfvJx4kdrsSY"
+}
+
+variable "solana_known_validator5" {
+  type        = string
+  description = "Solana known validator id"
+  default     = "Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN"
+}
+
+variable "solana_known_validator6" {
+  type        = string
+  description = "Solana known validator id"
+  default     = "9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv"
+}
+
+variable "solana_entrypoint1" {
+  type        = string
+  description = "Solana network entrypoint1"
+  default     = "entrypoint.testnet.solana.com:8001"
+}
+
+variable "solana_entrypoint2" {
+  type        = string
+  description = "Solana network entrypoint2"
+  default     = "entrypoint2.testnet.solana.com:8001"
+}
+
+variable "solana_entrypoint3" {
+  type        = string
+  description = "Solana network entrypoint3"
+  default     = "entrypoint3.testnet.solana.com:8001"
 }
 
 variable "solana_genesis_hash" {
