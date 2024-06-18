@@ -25,7 +25,7 @@ SOLANA_GENESIS_HASH={{solana_genesis_hash}}
 generate_systemd_unit_file() {
     echo "generate_systemd_unit_file: generating Solana cli"
 
-    cmd="solana-validator \
+    cmd="/usr/local/bin/solana-validator \
 --identity $SOLANA_IDENTITY \
 --ledger $SOLANA_LEDGER_MOUNT_POINT \
 --accounts $SOLANA_ACCOUNTS_MOUNT_POINT \
@@ -101,9 +101,9 @@ EOF
 
 start_solana_process() {
     echo "start_solana_process: starting the Solana rpc node process"
-    systemctl daemon-reload
-    systemctl enable solana-validator
-    systemctl start solana-validator
+    sudo systemctl daemon-reload
+    sudo systemctl enable solana-validator
+    sudo systemctl start solana-validator
 }
 
 generate_systemd_unit_file

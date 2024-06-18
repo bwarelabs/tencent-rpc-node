@@ -23,6 +23,8 @@ install_solana_cli() {
     sudo -u $SOLANA_SYSTEM_USER sh -c "$(curl -sSfL https://release.solana.com/$SOLANA_CLI_VERSION/install)"
     export PATH="/home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin:$PATH" >> /home/${SOLANA_SYSTEM_USER}/.bash_profile
     export PATH="/home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin:$PATH"
+    ln -s /home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin/solana-validator /usr/local/bin/solana-validator
+    chown $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER /usr/local/bin/solana-validator
 }
 
 verify_solana_cli() {
@@ -41,6 +43,7 @@ generate_solana_keys() {
     solana-keygen new -o validator-keypair.json --no-bip39-passphrase
     solana-keygen new -o vote-account-keypair.json --no-bip39-passphrase
     solana-keygen new -o authorized-withdrawer-keypair.json --no-bip39-passphrase
+    chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_KEYS_DIRECTORY
 }
 
 create_vote_account() {

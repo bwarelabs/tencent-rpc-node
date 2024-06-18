@@ -11,6 +11,10 @@ resource "tencentcloud_instance" "rpc_node" {
   image_id          = var.image_id != "" ? var.image_id : data.tencentcloud_images.rpc_image[0].image_id
   instance_type     = var.instance_type
 
+  allocate_public_ip         = true
+  internet_max_bandwidth_out = 200
+  orderly_security_groups    = [tencentcloud_security_group.rpc_sg.id]
+
   system_disk_type = var.system_disk_type
   system_disk_size = var.system_disk_size
 
@@ -37,4 +41,36 @@ resource "tencentcloud_instance" "rpc_node" {
 
   force_delete = var.force_delete
   tags         = var.instance_tags
+}
+
+resource "tencentcloud_security_group" "rpc_sg" {
+  name        = var.instance_name
+  description = "Solana RPC node security group"
+  tags        = var.instance_tags
+}
+
+resource "tencentcloud_security_group_rule_set" "rpc_sg_rule" {
+  security_group_id = tencentcloud_security_group.rpc_sg.id
+
+  ingress {
+    action      = "ACCEPT"
+    cidr_block  = "0.0.0.0/0"
+    protocol    = "TCP"
+    port        = "8000-10000"
+    description = "Open Solana validator ports"
+  }
+
+  ingress {
+    action      = "ACCEPT"
+    cidr_block  = "0.0.0.0/0"
+    protocol    = "UDP"
+    port        = "8000-10000"
+    description = "Open Solana validator ports"
+  }
+
+  egress {
+    action      = "ACCEPT"
+    cidr_block  = "0.0.0.0/0"
+    description = "Allow all egress traffic"
+  }
 }
