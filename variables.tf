@@ -292,5 +292,5 @@ variable "solana_private_rpc" {
 variable "solana_identity" {
   type        = string
   description = "The Solana node identity"
-  default     = "/root/solana/keys/validator-keypair.json"
+  default     = "/home/sol/solana/keys/validator-keypair.json"
 }

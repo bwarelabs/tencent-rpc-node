@@ -71,6 +71,7 @@ configure_ledger_drive() {
         mkdir -p $SOLANA_LEDGER_MOUNT_POINT
         chown -R sol:sol $SOLANA_LEDGER_MOUNT_POINT
         mount /dev/vdb $SOLANA_LEDGER_MOUNT_POINT
+        chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_LEDGER_MOUNT_POINT
         echo "configure_ledger_drive: $SOLANA_LEDGER_MOUNT_POINT mounted."
     fi
 }
@@ -84,6 +85,7 @@ configure_accountsdb_drive() {
         mkdir -p $SOLANA_ACCOUNTS_MOUNT_POINT
         chown -R sol:sol $SOLANA_ACCOUNTS_MOUNT_POINT
         mount /dev/vdc $SOLANA_ACCOUNTS_MOUNT_POINT
+        chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_ACCOUNTS_MOUNT_POINT
         echo "configure_accountsdb_drive: $SOLANA_ACCOUNTS_MOUNT_POINT mounted."
     fi
 }

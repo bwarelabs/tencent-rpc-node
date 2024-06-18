@@ -100,10 +100,11 @@ EOF
 }
 
 start_solana_process() {
+    echo "start_solana_process: starting the Solana rpc node process"
     systemctl daemon-reload
     systemctl enable solana-validator
     systemctl start solana-validator
-    systemctl status solana-validator
 }
 
 generate_systemd_unit_file
+start_solana_process
