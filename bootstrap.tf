@@ -15,6 +15,7 @@ resource "tencentcloud_tat_command" "solana-setup-node" {
   enable_parameter  = true
   default_parameters = jsonencode({
     "solana_node_type" : var.solana_node_type,
+    "solana_system_user" : var.solana_system_user,
     "solana_cli_directory" : var.solana_cli_directory,
     "solana_keys_directory" : var.solana_keys_directory,
     "solana_cli_version" : var.solana_cli_version,
@@ -44,6 +45,7 @@ resource "tencentcloud_tat_command" "solana-configure-process" {
   working_directory = "/root"
   enable_parameter  = true
   default_parameters = jsonencode({
+    "solana_system_user" : var.solana_system_user,
     "solana_entrypoint1" : var.solana_entrypoint1,
     "solana_entrypoint2" : var.solana_entrypoint2,
     "solana_entrypoint3" : var.solana_entrypoint3,

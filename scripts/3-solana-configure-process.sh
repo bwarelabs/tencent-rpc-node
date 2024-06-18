@@ -1,4 +1,4 @@
-SOLANA_NODE_TYPE={{solana_node_type}}
+SOLANA_SYSTEM_USER={{solana_system_user}}
 SOLANA_FULL_RPC_API={{solana_full_rpc_api}}
 SOLANA_NO_VOTING={{solana_no_voting}}
 SOLANA_PRIVATE_RPC={{solana_private_rpc}}
@@ -23,20 +23,20 @@ SOLANA_GENESIS_HASH={{solana_genesis_hash}}
 
 # SYSTEMD UNIT FILE
 generate_systemd_unit_file() {
-    echo "generating systemd unit file"
+    echo "generate_systemd_unit_file: generating Solana cli"
 
     cmd="solana-validator \
-    --identity $SOLANA_IDENTITY \
-    --ledger $SOLANA_LEDGER_MOUNT_POINT \
-    --accounts $SOLANA_ACCOUNTS_MOUNT_POINT \
-    --log $SOLANA_LOG_LOCATION \
-    --rpc-port 8899 \
-    --rpc-bind-address 0.0.0.0 \
-    --dynamic-port-range 8000-8020 \
-    --expected-genesis-hash $SOLANA_GENESIS_HASH \
-    --wal-recovery-mode skip_any_corrupted_record \
-    --limit-ledger-size"
-    
+--identity $SOLANA_IDENTITY \
+--ledger $SOLANA_LEDGER_MOUNT_POINT \
+--accounts $SOLANA_ACCOUNTS_MOUNT_POINT \
+--log $SOLANA_LOG_LOCATION \
+--rpc-port 8899 \
+--rpc-bind-address 0.0.0.0 \
+--dynamic-port-range 8000-8020 \
+--expected-genesis-hash $SOLANA_GENESIS_HASH \
+--wal-recovery-mode skip_any_corrupted_record \
+--limit-ledger-size"
+
     # VALIDATORS IDS
     if [ "$SOLANA_KNOWN_VALIDATOR1" != "" ]; then
         cmd+=" --known-validator $SOLANA_KNOWN_VALIDATOR1"
@@ -80,7 +80,7 @@ generate_systemd_unit_file() {
         cmd+=" --private-rpc"
     fi
 
-    echo "generating systemd file for Solana process"
+    echo "generate_systemd_unit_file: generating systemd file for Solana process"
     cat <<EOF | sudo tee /etc/systemd/system/solana-validator.service
 [Unit]
 Description=Solana Validator Service
@@ -88,19 +88,22 @@ After=network.target
 
 [Service]
 Type=simple
-User=sol   # Replace with the appropriate user
+User=$SOLANA_SYSTEM_USER
 ExecStart=$cmd
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 EOF
-    
-    echo "process will run with the following arguments $cmd"
-    sudo systemctl daemon-reload
-    sudo systemctl enable solana-validator
-    # sudo systemctl start solana-validator
-    # sudo systemctl status solana-validator
+
+    echo "generate_systemd_unit_file: Solana process will run with the following arguments: $cmd"
+}
+
+start_solana_process() {
+    systemctl daemon-reload
+    systemctl enable solana-validator
+    systemctl start solana-validator
+    systemctl status solana-validator
 }
 
 generate_systemd_unit_file

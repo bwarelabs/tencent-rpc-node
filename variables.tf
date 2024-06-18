@@ -247,16 +247,22 @@ variable "solana_network" {
   default     = "https://api.testnet.solana.com"
 }
 
+variable "solana_system_user" {
+  type        = string
+  description = "The Solana system user"
+  default     = "sol"
+}
+
 variable "solana_cli_directory" {
   type        = string
   description = "The location of the Solana cli"
-  default     = "/root/solana"
+  default     = "/home/sol/solana"
 }
 
 variable "solana_keys_directory" {
   type        = string
   description = "The location of the Solana keys"
-  default     = "/root/solana/keys"
+  default     = "/home/sol/solana/keys"
 }
 
 variable "solana_log_location" {
