@@ -95,8 +95,8 @@ variable "route_entries" {
   default = [
     {
       destination_cidr_block = "0.0.0.0/0"
-      next_type              = "CVM"
-      next_hub               = "Public IP of CVM"
+      next_type              = "EIP"
+      next_hub               = "0"
     }
   ]
 }
@@ -162,6 +162,42 @@ variable "vpc_acls" {
 variable "vpc_acl_tags" {
   type        = map(string)
   description = "Specify one or more tags for the VPC ACLs"
+  default = {
+    "network" : "tencent",
+    "type" : "rpc",
+  }
+}
+
+################################################################################
+# NAT GATEWAY VARIABLES
+################################################################################
+
+variable "enable_nat_gateway" {
+  type        = bool
+  description = "Enable the creation of the NAT gateway"
+  default     = false
+}
+
+variable "nat_gateway_public_ips" {
+  type        = list(string)
+  description = "The list of public IPs associated with the NAT gateway"
+  default     = []
+}
+
+variable "nat_gateway_bandwidth" {
+  description = "bandwidth of NAT Gateway"
+  type        = number
+  default     = 100
+}
+
+variable "nat_gateway_concurrent" {
+  description = "bandwidth of NAT Gateway"
+  type        = number
+  default     = 1000000
+}
+variable "nat_gateway_tags" {
+  type        = map(string)
+  description = "Specify one or more tags for the NAT gateway"
   default = {
     "network" : "tencent",
     "type" : "rpc",
