@@ -14,7 +14,7 @@
   - [Outputs](#outputs)
 
 ## Description
-This terraform repository is used to bootstrap multiple types of Solana nodes: RPC full, RPC lite, Validator. One important aspect to remember is that Solana nodes require public access because they are part of the blockhain network and need peer-to-peer connections. For this reason, the CVM will be using a public IP instead of a NAT to allow incoming peer connections. Note that all the network rules and the instance security groups only allow for ports used by Solana.
+This terraform repository is used to bootstrap multiple types of Solana nodes: RPC full, RPC lite, Validator. One important aspect to remember is that Solana nodes require public access because they are part of the blockchain network and need peer-to-peer connections. For this reason, the CVM will be using a public IP instead of a NAT to allow incoming peer connections. Note that all the network rules and the instance security groups only allow for ports used by Solana.
 
 There are several things that the module can perform as follows:
 *   Build the underlying network setup if required - you can use the repo to also build the network setup that is later needed to provision Solana RPC nodes. If you want to deploy the node in an existing VPC then this feature is also supported and all details can be provided by using the module variables.
