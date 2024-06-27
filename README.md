@@ -14,18 +14,18 @@
   - [Outputs](#outputs)
 
 ## Description
-This terraform repository is used to bootstrap multiple types of Solana nodes: RPC full, RPC lite, Validator. One important aspect to remember is that Solana nodes require public access because they are part of the blochain network and need peer-to-peer connections. For this reason, the CVM will be using a public IP instead of a NAT to allow incoming peer connections. Note that all the network rules and the instace security groups only allow for ports used by Solana.
+This terraform repository is used to bootstrap multiple types of Solana nodes: RPC full, RPC lite, Validator. One important aspect to remember is that Solana nodes require public access because they are part of the blockhain network and need peer-to-peer connections. For this reason, the CVM will be using a public IP instead of a NAT to allow incoming peer connections. Note that all the network rules and the instance security groups only allow for ports used by Solana.
 
 There are several things that the module can perform as follows:
 *   Build the underlying network setup if required - you can use the repo to also build the network setup that is later needed to provision Solana RPC nodes. If you want to deploy the node in an existing VPC then this feature is also supported and all details can be provided by using the module variables.
 *   Bootstrap the RPC node - within the VPC one or more CVMs will be provisioned which can be customized by using the module flags.
 
 ## Provisioning 
-Below sections describe how can you bootstrap RPC nodes by using this module
+The following sections describe how can you bootstrap RPC nodes by using this module
 
 ### the VPC
 
-Make sure to add/remove/change any values within the vpcvariables.tf file based on what is required in your setup. If using the default values several things will be deployed and configured:
+Make sure to add/remove/change any values within the *vpcvariables.tf* file based on what is required in your setup. If using the default values several things will be deployed and configured:
 * one VPC
 * one route table
 * one or more subnets as indicated
@@ -34,14 +34,14 @@ Make sure to add/remove/change any values within the vpcvariables.tf file based 
 
 ### the RPC node
 
-Make sure to add/remove/change any values within the variables.tf file based on what is required in your setup. The most important variables within this file are those related to the Solana network which are needed based on what network you are trying to connect to e.g. testnet/mainnet. The setup assumes a public image from the Tencent cloud will be used for the machine, a custom image id can also be set.
+Make sure to add/remove/change any values within the *variables.tf* file based on what is required in your setup. The most important variables within this file are those related to the Solana network which are needed based on what network you are trying to connect to e.g. testnet/mainnet. The setup assumes a public image from the Tencent cloud will be used for the machine, a custom image id can also be provided.
 The following cloud resources will be deployed:
 * one or more instances
 * one security group 
 * one or more security group resources
 * several Tencent Cloud Automation Tools (TAT) commands
 
-It is important to verify the providers.tf file and set the proper credentials and region where the setup will be deployed. Now simply execute the following commands to create the above mentioned resources
+It is important to verify the *providers.tf* file and set the proper credentials and region where the setup will be deployed. Now simply execute the following commands to create the above mentioned resources
 
 ```
 terraform init
@@ -51,12 +51,12 @@ terraform apply
 
 ### configure the RPC node
 
-Navigate to the Solana console, navigate to Cloud Virtual Machine, expand Tencent Automation Tools and click on My Commands. Now execute each command in a sequencial order as follows:
+Enter the *Tencent cloud console*, navigate to *Cloud Virtual Machine* section, expand *Tencent Automation Tools* and click on *My Commands*. Now execute each command in a sequential order as follows:
 * 1-solana-setup-node
 * 2-solana-system-configuration
 * 3-solana-configure-process
 
-At the end of the third step, the RPC node should be up and running, all systems configured tuned, disks formatted and mounted and the Solana validator process started.
+At the end of the third step, the RPC node should be up and running, all systems configurations set, disks formatted and mounted and the Solana validator process started.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
