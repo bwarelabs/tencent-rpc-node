@@ -108,6 +108,11 @@ configure_accountsdb_drive() {
     fi
 }
 
+install_literpc() {
+  curl -sSfL https://pub-909f63724b1b4aa1bb8797f77fec42db.r2.dev/solana-lite-rpc -o /usr/local/bin/solana-lite-rpc
+  chmod +x /usr/local/bin/solana-lite-rpc
+}
+
 # RPC NODE
 setup_rpc_node() {
     echo "configuring rpc node"
@@ -118,20 +123,27 @@ setup_rpc_node() {
 # ------------------------------
 create_solana_user
 install_machine_packages
-install_solana_cli
-verify_solana_cli
+
 generate_solana_keys
 
 case $SOLANA_NODE_TYPE in
   validator)
     echo "solana node will be of type: validator"
+    install_solana_cli
+    verify_solana_cli
     create_vote_account
     configure_ledger_drive
     configure_accountsdb_drive
     ;;
   rpc)
     echo "solana node will be of type: rpc"
+    install_solana_cli
+    verify_solana_cli
     setup_rpc_node
+    ;;
+  literpc)
+    echo "solana node will be of type: literpc"
+    install_literpc
     ;;
   *)
     echo "unknown node type: $SOLANA_NODE_TYPE"

@@ -155,6 +155,11 @@ variable "solana_node_type" {
   type        = string
   description = "Solana node type"
   default     = "validator"
+
+  validation {
+    condition = contains(["validator", "rpc", "literpc"], var.solana_node_type)
+    error_message = "The Solana node type must be either validator, rpc, or literpc"
+  }
 }
 
 variable "solana_ledger_mount_point" {
@@ -184,7 +189,7 @@ variable "solana_network" {
   description = "The Solana network to use for the node"
   default     = "mainnet-beta"
 
-  validation = {
+  validation {
     condition = contains(["devnet", "testnet", "mainnet-beta"], var.solana_network)
     error_message = "The Solana network must be either devnet, testnet, or mainnet-beta"
   }
@@ -236,4 +241,15 @@ variable "solana_identity" {
   type        = string
   description = "The Solana node identity"
   default     = "/home/sol/solana/keys/validator-keypair.json"
+}
+
+variable "solana_hbase_cluster_ip" {
+  type        = string
+  description = "The HBase cluster IP"
+  default     = ""
+
+  validation {
+    condition = solana_node_type == "literpc" && var.solana_hbase_cluster_ip != ""
+    error_message = "The HBase cluster IP must be provided for literpc nodes"
+  }
 }
