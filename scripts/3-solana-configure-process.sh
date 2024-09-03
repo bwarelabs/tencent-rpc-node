@@ -4,22 +4,63 @@ SOLANA_NO_VOTING={{solana_no_voting}}
 SOLANA_PRIVATE_RPC={{solana_private_rpc}}
 SOLANA_IDENTITY={{solana_identity}}
 
-SOLANA_KNOWN_VALIDATOR1={{solana_known_validator1}}
-SOLANA_KNOWN_VALIDATOR2={{solana_known_validator2}}
-SOLANA_KNOWN_VALIDATOR3={{solana_known_validator3}}
-SOLANA_KNOWN_VALIDATOR4={{solana_known_validator4}}
-SOLANA_KNOWN_VALIDATOR5={{solana_known_validator5}}
-SOLANA_KNOWN_VALIDATOR6={{solana_known_validator6}}
-
-SOLANA_ENTRYPOINT1={{solana_entrypoint1}}
-SOLANA_ENTRYPOINT2={{solana_entrypoint2}}
-SOLANA_ENTRYPOINT3={{solana_entrypoint3}}
+case {{solana_network}} in
+    "mainnet-beta")
+        SOLANA_KNOWN_VALIDATORS=(
+            "7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2"
+            "GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ"
+            "DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ"
+            "CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S"
+        )
+        SOLANA_ENTRYPOINTS=(
+            "entrypoint.mainnet-beta.solana.com:8001"
+            "entrypoint2.mainnet-beta.solana.com:8001"
+            "entrypoint3.mainnet-beta.solana.com:8001"
+            "entrypoint4.mainnet-beta.solana.com:8001"
+            "entrypoint5.mainnet-beta.solana.com:8001"
+        )
+        SOLANA_GENESIS_HASH="5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d"
+        ;;
+    "testnet")
+        SOLANA_KNOWN_VALIDATORS=(
+            "5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on"
+            "dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs"
+            "Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN"
+            "eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ"
+            "9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv"
+        )
+        SOLANA_ENTRYPOINTS=(
+            "entrypoint.testnet.solana.com:8001"
+            "entrypoint2.testnet.solana.com:8001"
+            "entrypoint3.testnet.solana.com:8001"
+        )
+        SOLANA_GENESIS_HASH="4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY"
+        ;;
+    "devnet")
+        SOLANA_KNOWN_VALIDATORS=(
+            "dv1ZAGvdsz5hHLwWXsVnM94hWf1pjbKVau1QVkaMJ92"
+            "dv2eQHeP4RFrJZ6UeiZWoc3XTtmtZCUKxxCApCDcRNV"
+            "dv4ACNkpYPcE3aKmYDqZm9G5EB3J4MRoeE7WNDRBVJB"
+            "dv3qDFk1DTF36Z62bNvrCXe9sKATA6xvVy6A798xxAS"
+        )
+        SOLANA_ENTRYPOINTS=(
+            "entrypoint.devnet.solana.com:8001"
+            "entrypoint2.devnet.solana.com:8001"
+            "entrypoint3.devnet.solana.com:8001"
+            "entrypoint4.devnet.solana.com:8001"
+            "entrypoint5.devnet.solana.com:8001"
+        )
+        SOLANA_GENESIS_HASH="EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG"
+        ;;
+    *)
+        echo "unknown network: {{solana_network}}"
+        exit 1
+        ;;
+esac
 
 SOLANA_LEDGER_MOUNT_POINT={{solana_ledger_mount_point}}
 SOLANA_ACCOUNTS_MOUNT_POINT={{solana_accounts_mount_point}}
 SOLANA_LOG_LOCATION={{solana_log_location}}
-
-SOLANA_GENESIS_HASH={{solana_genesis_hash}}
 
 # SYSTEMD UNIT FILE
 generate_systemd_unit_file() {
@@ -38,35 +79,14 @@ generate_systemd_unit_file() {
 --limit-ledger-size"
 
     # VALIDATORS IDS
-    if [ "$SOLANA_KNOWN_VALIDATOR1" != "" ]; then
-        cmd+=" --known-validator $SOLANA_KNOWN_VALIDATOR1"
-    fi
-    if [ "$SOLANA_KNOWN_VALIDATOR2" != "" ]; then
-        cmd+=" --known-validator $SOLANA_KNOWN_VALIDATOR2"
-    fi
-    if [ "$SOLANA_KNOWN_VALIDATOR3" != "" ]; then
-        cmd+=" --known-validator $SOLANA_KNOWN_VALIDATOR3"
-    fi
-    if [ "$SOLANA_KNOWN_VALIDATOR4" != "" ]; then
-        cmd+=" --known-validator $SOLANA_KNOWN_VALIDATOR4"
-    fi
-    if [ "$SOLANA_KNOWN_VALIDATOR5" != "" ]; then
-        cmd+=" --known-validator $SOLANA_KNOWN_VALIDATOR5"
-    fi
-    if [ "$SOLANA_KNOWN_VALIDATOR6" != "" ]; then
-        cmd+=" --known-validator $SOLANA_KNOWN_VALIDATOR6"
-    fi
+    for validator_id in "${SOLANA_KNOWN_VALIDATORS[@]}"; do
+        cmd+=" --known-validator $validator_id"
+    done
 
     # NETWORK ENDPOINTS
-    if [ "$SOLANA_ENTRYPOINT1" != "" ]; then
-        cmd+=" --entrypoint $SOLANA_ENTRYPOINT1"
-    fi
-    if [ "$SOLANA_ENTRYPOINT2" != "" ]; then
-        cmd+=" --entrypoint $SOLANA_ENTRYPOINT2"
-    fi
-    if [ "$SOLANA_ENTRYPOINT3" != "" ]; then
-        cmd+=" --entrypoint $SOLANA_ENTRYPOINT3"
-    fi    
+    for network_endpoint in "${SOLANA_ENTRYPOINTS[@]}"; do
+        cmd+=" --entrypoint $network_endpoint"
+    done
 
     if [ "$SOLANA_FULL_RPC_API" == "true" ]; then
         cmd+=" --full-rpc-api"

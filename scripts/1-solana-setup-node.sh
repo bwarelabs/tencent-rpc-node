@@ -5,9 +5,24 @@ SOLANA_NODE_TYPE={{solana_node_type}}
 SOLANA_CLI_DIRECTORY={{solana_cli_directory}}
 SOLANA_KEYS_DIRECTORY={{solana_keys_directory}}
 SOLANA_CLI_VERSION={{solana_cli_version}}
-SOLANA_NETWORK={{solana_network}}
 SOLANA_LEDGER_MOUNT_POINT={{solana_ledger_mount_point}}
 SOLANA_ACCOUNTS_MOUNT_POINT={{solana_accounts_mount_point}}
+
+case {{solana_network}} in
+  mainnet-beta)
+    SOLANA_NETWORK="https://api.mainnet-beta.solana.com"
+    ;;
+  testnet)
+    SOLANA_NETWORK="https://api.testnet.solana.com"
+    ;;
+  devnet)
+    SOLANA_NETWORK="https://api.devnet.solana.com"
+    ;;
+  *)
+    echo "unknown network: {{solana_network}}"
+    exit 1
+    ;;
+esac
 
 # COMMON
 install_machine_packages() {

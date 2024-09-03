@@ -173,78 +173,21 @@ variable "solana_accounts_mount_point" {
 # SOLANA NETWORK DETAILS
 ################################################################################
 
-
-// tat does not support list of objets, only single strings are supported
-variable "solana_known_validator1" {
-  type        = string
-  description = "Solana known validator id"
-  default     = "5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on"
-}
-
-variable "solana_known_validator2" {
-  type        = string
-  description = "Solana known validator id"
-  default     = "dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs"
-}
-
-variable "solana_known_validator3" {
-  type        = string
-  description = "Solana known validator id"
-  default     = "eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ"
-}
-
-variable "solana_known_validator4" {
-  type        = string
-  description = "Solana known validator id"
-  default     = "7XSY3MrYnK8vq693Rju17bbPkCN3Z7KvvfvJx4kdrsSY"
-}
-
-variable "solana_known_validator5" {
-  type        = string
-  description = "Solana known validator id"
-  default     = "Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN"
-}
-
-variable "solana_known_validator6" {
-  type        = string
-  description = "Solana known validator id"
-  default     = "9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv"
-}
-
-variable "solana_entrypoint1" {
-  type        = string
-  description = "Solana network entrypoint1"
-  default     = "entrypoint.testnet.solana.com:8001"
-}
-
-variable "solana_entrypoint2" {
-  type        = string
-  description = "Solana network entrypoint2"
-  default     = "entrypoint2.testnet.solana.com:8001"
-}
-
-variable "solana_entrypoint3" {
-  type        = string
-  description = "Solana network entrypoint3"
-  default     = "entrypoint3.testnet.solana.com:8001"
-}
-
-variable "solana_genesis_hash" {
-  type        = string
-  description = "The expected Solana genesis hash"
-  default     = "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY"
-}
-
 variable "solana_cli_version" {
   type        = string
   description = "Solana CLI version"
-  default     = "v1.18.14"
+  default     = "v1.18.22"
 }
 
 variable "solana_network" {
   type        = string
   description = "The Solana network to use for the node"
-  default     = "https://api.testnet.solana.com"
+  default     = "mainnet-beta"
+
+  validation = {
+    condition = contains(["devnet", "testnet", "mainnet-beta"], var.solana_network)
+    error_message = "The Solana network must be either devnet, testnet, or mainnet-beta"
+  }
 }
 
 variable "solana_system_user" {
