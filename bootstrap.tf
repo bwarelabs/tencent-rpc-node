@@ -46,15 +46,7 @@ resource "tencentcloud_tat_command" "solana-configure-process" {
   enable_parameter  = true
   default_parameters = jsonencode({
     "solana_system_user" : var.solana_system_user,
-    "solana_entrypoint1" : var.solana_entrypoint1,
-    "solana_entrypoint2" : var.solana_entrypoint2,
-    "solana_entrypoint3" : var.solana_entrypoint3,
-    "solana_known_validator1" : var.solana_known_validator1,
-    "solana_known_validator2" : var.solana_known_validator2,
-    "solana_known_validator3" : var.solana_known_validator3,
-    "solana_known_validator4" : var.solana_known_validator4,
-    "solana_known_validator5" : var.solana_known_validator5,
-    "solana_known_validator6" : var.solana_known_validator6,
+    "solana_network" : var.solana_network,
     "solana_full_rpc_api" : var.solana_full_rpc_api,
     "solana_no_voting" : var.solana_no_voting,
     "solana_private_rpc" : var.solana_private_rpc,
@@ -62,6 +54,5 @@ resource "tencentcloud_tat_command" "solana-configure-process" {
     "solana_ledger_mount_point" : var.solana_ledger_mount_point,
     "solana_accounts_mount_point" : var.solana_accounts_mount_point,
     "solana_log_location" : var.solana_log_location,
-    "solana_genesis_hash" : var.solana_genesis_hash,
   })
 }
