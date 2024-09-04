@@ -249,7 +249,7 @@ variable "solana_hbase_cluster_ip" {
   default     = ""
 
   validation {
-    condition = solana_node_type == "literpc" && var.solana_hbase_cluster_ip != ""
+    condition = var.solana_node_type != "literpc" || var.solana_hbase_cluster_ip != ""
     error_message = "The HBase cluster IP must be provided for literpc nodes"
   }
 }

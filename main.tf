@@ -68,6 +68,17 @@ resource "tencentcloud_security_group_rule_set" "rpc_sg_rule" {
     description = "Open Solana validator ports"
   }
 
+  dynamic "ingress" {
+    for_each = var.solana_full_rpc_api ? ["ACCEPT"] : ["REJECT"]
+    content {
+      action      = ingress.value
+      cidr_block  = "0.0.0.0/0"
+      protocol    = "TCP"
+      port        = "8899"
+      description = "Open Solana RPC port"
+    }
+  }
+
   egress {
     action      = "ACCEPT"
     cidr_block  = "0.0.0.0/0"

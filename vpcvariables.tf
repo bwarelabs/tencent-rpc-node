@@ -122,7 +122,7 @@ variable "subnet_cidrs" {
   default = [
     {
       "name" : "rpc_subnet_1",
-      "cidr_block" : "172.16.1.0/24",
+      "cidr_block" : "172.16.100.0/24",
       "is_multicast" : true,
       "availability_zone" : "eu-frankfurt-1",
     }

@@ -27,10 +27,15 @@ esac
 # COMMON
 install_machine_packages() {
     echo "install_machine_packages: installing packages on the node"
-    yum install -y jq curl nc bind-utils pkg-config  
+    yum install -y jq curl nc bind-utils pkg-config sudo
 }
 
 install_solana_cli() {
+    if [ ! -f /usr/local/bin/solana-validator ]; then
+        echo "install_solana_cli: Solana cli already installed."
+        return
+    fi
+
     echo "install_solana_cli: installing the Solana cli in $SOLANA_CLI_DIRECTORY"
     mkdir -p $SOLANA_CLI_DIRECTORY
     cd $SOLANA_CLI_DIRECTORY
@@ -52,6 +57,11 @@ verify_solana_cli() {
 
 # VALIDATOR
 generate_solana_keys() {
+    if [ -f $SOLANA_KEYS_DIRECTORY/validator-keypair.json ]; then
+        echo "generate_solana_keys: Solana keys already generated."
+        return
+    fi
+
     mkdir -p $SOLANA_KEYS_DIRECTORY
     cd $SOLANA_KEYS_DIRECTORY
     echo "generate_solana_keys: generating Solana keys in: $SOLANA_KEYS_DIRECTORY"
@@ -66,49 +76,56 @@ create_vote_account() {
 }
 
 create_solana_user() {
-    echo "create_solana_user: creating Solana system user: $SOLANA_SYSTEM_USER"
-
     if id "$SOLANA_SYSTEM_USER" &>/dev/null; then
         echo "create_solana_user: user $SOLANA_SYSTEM_USER already exists."
-    else
-        adduser -m $SOLANA_SYSTEM_USER
-        
-        chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_CLI_DIRECTORY
-
-        sudo usermod -aG sudo $SOLANA_SYSTEM_USER
-        echo "$SOLANA_SYSTEM_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$SOLANA_SYSTEM_USER
+        return
     fi
+
+    echo "create_solana_user: creating Solana system user: $SOLANA_SYSTEM_USER"
+    adduser -m $SOLANA_SYSTEM_USER
+
+    chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_CLI_DIRECTORY
+
+    usermod -aG sudo $SOLANA_SYSTEM_USER
+    echo "$SOLANA_SYSTEM_USER ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/$SOLANA_SYSTEM_USER
 }
 
 configure_ledger_drive() {
-    echo "configure_ledger_drive: formatting and configuring ledger drive, we assume it is the first data disk vdb"
     if mountpoint -q "$SOLANA_LEDGER_MOUNT_POINT"; then
         echo "configure_ledger_drive: $SOLANA_LEDGER_MOUNT_POINT is already mounted."
-    else
-        mkfs -t ext4 /dev/vdb
-        mkdir -p $SOLANA_LEDGER_MOUNT_POINT
-        chown -R sol:sol $SOLANA_LEDGER_MOUNT_POINT
-        mount /dev/vdb $SOLANA_LEDGER_MOUNT_POINT
-        chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_LEDGER_MOUNT_POINT
-        echo "configure_ledger_drive: $SOLANA_LEDGER_MOUNT_POINT mounted."
+        return
     fi
+
+    echo "configure_ledger_drive: formatting and configuring ledger drive, we assume it is the first data disk vdb"
+    mkfs -t ext4 /dev/vdb
+    mkdir -p $SOLANA_LEDGER_MOUNT_POINT
+    chown -R sol:sol $SOLANA_LEDGER_MOUNT_POINT
+    mount /dev/vdb $SOLANA_LEDGER_MOUNT_POINT
+    chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_LEDGER_MOUNT_POINT
+    echo "configure_ledger_drive: $SOLANA_LEDGER_MOUNT_POINT mounted."
 }
 
 configure_accountsdb_drive() {
-    echo "configure_accountsdb_drive: formatting and configuring accountsdb drive, we assume it is the second data disk vdc"
     if mountpoint -q "$SOLANA_ACCOUNTS_MOUNT_POINT"; then
         echo "configure_accountsdb_drive: $SOLANA_ACCOUNTS_MOUNT_POINT is already mounted."
-    else
-        mkfs -t ext4 /dev/vdc
-        mkdir -p $SOLANA_ACCOUNTS_MOUNT_POINT
-        chown -R sol:sol $SOLANA_ACCOUNTS_MOUNT_POINT
-        mount /dev/vdc $SOLANA_ACCOUNTS_MOUNT_POINT
-        chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_ACCOUNTS_MOUNT_POINT
-        echo "configure_accountsdb_drive: $SOLANA_ACCOUNTS_MOUNT_POINT mounted."
+        return
     fi
+
+    echo "configure_accountsdb_drive: formatting and configuring accountsdb drive, we assume it is the second data disk vdc"
+    mkfs -t ext4 /dev/vdc
+    mkdir -p $SOLANA_ACCOUNTS_MOUNT_POINT
+    chown -R sol:sol $SOLANA_ACCOUNTS_MOUNT_POINT
+    mount /dev/vdc $SOLANA_ACCOUNTS_MOUNT_POINT
+    chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_ACCOUNTS_MOUNT_POINT
+    echo "configure_accountsdb_drive: $SOLANA_ACCOUNTS_MOUNT_POINT mounted."
 }
 
 install_literpc() {
+  if [ -f /usr/local/bin/solana-lite-rpc ]; then
+    echo "install_literpc: Solana lite rpc already installed."
+    return
+  fi
+
   curl -sSfL https://pub-909f63724b1b4aa1bb8797f77fec42db.r2.dev/solana-lite-rpc -o /usr/local/bin/solana-lite-rpc
   chmod +x /usr/local/bin/solana-lite-rpc
 }
@@ -121,16 +138,15 @@ setup_rpc_node() {
 # ------------------------------
 # main
 # ------------------------------
-create_solana_user
 install_machine_packages
-
-generate_solana_keys
+create_solana_user
 
 case $SOLANA_NODE_TYPE in
   validator)
     echo "solana node will be of type: validator"
     install_solana_cli
     verify_solana_cli
+    generate_solana_keys
     create_vote_account
     configure_ledger_drive
     configure_accountsdb_drive
@@ -139,6 +155,7 @@ case $SOLANA_NODE_TYPE in
     echo "solana node will be of type: rpc"
     install_solana_cli
     verify_solana_cli
+    generate_solana_keys
     setup_rpc_node
     ;;
   literpc)

@@ -125,7 +125,7 @@ EOF
 generate_solana_literpc_systemd_unit_file() {
     echo "generate_systemd_unit_file: generating Solana cli"
 
-    cmd="/usr/local/bin/solana-lite-rpc --rpc-hbase-address $SOLANA_HBASE_CLUSTER_IP:9090"
+    cmd="/usr/local/bin/solana-lite-rpc --rpc-hbase-address $SOLANA_HBASE_CLUSTER_IP:9090 --log-path /tmp/solana-lite-rpc --log"
 
     echo "generate_systemd_unit_file: generating systemd file for Solana process"
     cat <<EOF | sudo tee /etc/systemd/system/solana-lite-rpc.service
@@ -177,5 +177,4 @@ case $SOLANA_NODE_TYPE in
     echo "unknown node type: $SOLANA_NODE_TYPE"
     exit 1
     ;;
-
-
+esac
