@@ -3,6 +3,7 @@ SOLANA_FULL_RPC_API={{solana_full_rpc_api}}
 SOLANA_NO_VOTING={{solana_no_voting}}
 SOLANA_PRIVATE_RPC={{solana_private_rpc}}
 SOLANA_IDENTITY={{solana_identity}}
+SOLANA_NODE_TYPE={{solana_node_type}}
 
 case {{solana_network}} in
     "mainnet-beta")
@@ -62,8 +63,10 @@ SOLANA_LEDGER_MOUNT_POINT={{solana_ledger_mount_point}}
 SOLANA_ACCOUNTS_MOUNT_POINT={{solana_accounts_mount_point}}
 SOLANA_LOG_LOCATION={{solana_log_location}}
 
+SOLANA_HBASE_CLUSTER_IP={{solana_hbase_cluster_ip}}
+
 # SYSTEMD UNIT FILE
-generate_systemd_unit_file() {
+generate_solana_validator_systemd_unit_file() {
     echo "generate_systemd_unit_file: generating Solana cli"
 
     cmd="/usr/local/bin/solana-validator \
@@ -119,6 +122,30 @@ EOF
     echo "generate_systemd_unit_file: Solana process will run with the following arguments: $cmd"
 }
 
+generate_solana_literpc_systemd_unit_file() {
+    echo "generate_systemd_unit_file: generating Solana cli"
+
+    cmd="/usr/local/bin/solana-lite-rpc --rpc-hbase-address $SOLANA_HBASE_CLUSTER_IP:9090"
+
+    echo "generate_systemd_unit_file: generating systemd file for Solana process"
+    cat <<EOF | sudo tee /etc/systemd/system/solana-lite-rpc.service
+[Unit]
+Description=Solana Lite RPC Service
+After=network.target
+
+[Service]
+Type=simple
+User=$SOLANA_SYSTEM_USER
+ExecStart=$cmd
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    echo "generate_systemd_unit_file: Solana process will run with the following arguments: $cmd"
+}
+
 start_solana_process() {
     echo "start_solana_process: starting the Solana rpc node process"
     sudo systemctl daemon-reload
@@ -126,5 +153,29 @@ start_solana_process() {
     sudo systemctl start solana-validator
 }
 
-generate_systemd_unit_file
-start_solana_process
+start_solana_literpc_process() {
+    echo "start_solana_process: starting the Solana rpc node process"
+    sudo systemctl daemon-reload
+    sudo systemctl enable solana-lite-rpc
+    sudo systemctl start solana-lite-rpc
+}
+
+case $SOLANA_NODE_TYPE in
+  validator)
+    generate_solana_validator_systemd_unit_file
+    start_solana_process
+    ;;
+  rpc)
+    generate_solana_validator_systemd_unit_file
+    start_solana_process
+    ;;
+  literpc)
+    generate_solana_literpc_systemd_unit_file
+    start_solana_literpc_process
+    ;;
+  *)
+    echo "unknown node type: $SOLANA_NODE_TYPE"
+    exit 1
+    ;;
+
+
