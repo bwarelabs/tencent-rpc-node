@@ -45,6 +45,7 @@ resource "tencentcloud_tat_command" "solana-configure-process" {
   working_directory = "/root"
   enable_parameter  = true
   default_parameters = jsonencode({
+    "solana_node_type" : var.solana_node_type,
     "solana_system_user" : var.solana_system_user,
     "solana_network" : var.solana_network,
     "solana_full_rpc_api" : var.solana_full_rpc_api,
@@ -54,5 +55,6 @@ resource "tencentcloud_tat_command" "solana-configure-process" {
     "solana_ledger_mount_point" : var.solana_ledger_mount_point,
     "solana_accounts_mount_point" : var.solana_accounts_mount_point,
     "solana_log_location" : var.solana_log_location,
+    "solana_hbase_cluster_ip": var.solana_hbase_cluster_ip,
   })
 }
