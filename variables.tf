@@ -243,13 +243,24 @@ variable "solana_identity" {
   default     = "/home/sol/solana/keys/validator-keypair.json"
 }
 
+variable "solana_bigtable_hbase_adapter" {
+  type        = string
+  description = "Enable Bigtable HBase adapter on the node"
+  default     = "false"
+
+  validation {
+    condition = var.solana_node_type != "literpc" || var.solana_bigtable_hbase_adapter == "false"
+    error_message = "The HBase adapter must be disabled for literpc nodes"
+  }
+}
+
 variable "solana_hbase_cluster_ip" {
   type        = string
   description = "The HBase cluster IP"
   default     = ""
 
   validation {
-    condition = var.solana_node_type != "literpc" || var.solana_hbase_cluster_ip != ""
+    condition = var.solana_hbase_cluster_ip != "" || (var.solana_node_type != "literpc" && var.solana_bigtable_hbase_adapter == "false")
     error_message = "The HBase cluster IP must be provided for literpc nodes"
   }
 }

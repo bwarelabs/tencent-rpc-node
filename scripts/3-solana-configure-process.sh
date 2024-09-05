@@ -4,6 +4,7 @@ SOLANA_NO_VOTING={{solana_no_voting}}
 SOLANA_PRIVATE_RPC={{solana_private_rpc}}
 SOLANA_IDENTITY={{solana_identity}}
 SOLANA_NODE_TYPE={{solana_node_type}}
+SOLANA_BIGTABLE_HBASE_ADAPTER={{solana_bigtable_hbase_adapter}}
 
 case {{solana_network}} in
     "mainnet-beta")
@@ -103,6 +104,11 @@ generate_solana_validator_systemd_unit_file() {
         cmd+=" --private-rpc"
     fi
 
+    if [ "$SOLANA_BIGTABLE_HBASE_ADAPTER" == "true" ]; then
+        solana_env="Environment=BIGTABLE_EMULATOR_HOST=127.0.0.1:50051"
+        cmd+=" --enable-bigtable-ledger-upload --enable-rpc-bigtable-ledger-storage --enable-rpc-transaction-history"
+    fi
+
     echo "generate_systemd_unit_file: generating systemd file for Solana process"
     cat <<EOF | sudo tee /etc/systemd/system/solana-validator.service
 [Unit]
@@ -111,6 +117,7 @@ After=network.target
 
 [Service]
 Type=simple
+$solana_env
 User=$SOLANA_SYSTEM_USER
 ExecStart=$cmd
 Restart=on-failure
@@ -146,6 +153,36 @@ EOF
     echo "generate_systemd_unit_file: Solana process will run with the following arguments: $cmd"
 }
 
+generate_solana_bigtable_hbase_adapter_systemd_unit_file() {
+    if [ "$SOLANA_BIGTABLE_HBASE_ADAPTER" != "true" ]; then
+        echo "generate_systemd_unit_file: Solana bigtable adapter not enabled."
+        return
+    fi
+
+    echo "generate_systemd_unit_file: generating Solana cli"
+
+    cmd="/usr/local/bin/solana-bigtable-hbase-adapter-server"
+
+    echo "generate_systemd_unit_file: generating systemd file for Solana process"
+    cat <<EOF | sudo tee /etc/systemd/system/solana-bigtable-hbase-adapter.service
+[Unit]
+Description=Solana Bigtable HBase Adapter Service
+After=network.target
+
+[Service]
+Environment="HBASE_HOST=$SOLANA_HBASE_CLUSTER_IP:9090"
+Type=simple
+User=$SOLANA_SYSTEM_USER
+ExecStart=$cmd
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    echo "generate_systemd_unit_file: Solana process will run with the following arguments: $cmd"
+}
+
 start_solana_process() {
     echo "start_solana_process: starting the Solana rpc node process"
     sudo systemctl daemon-reload
@@ -160,14 +197,30 @@ start_solana_literpc_process() {
     sudo systemctl start solana-lite-rpc
 }
 
+start_solana_bigtable_hbase_adapter_process() {
+    if [ "$SOLANA_BIGTABLE_HBASE_ADAPTER" != "true" ]; then
+        echo "start_solana_process: Solana bigtable adapter not enabled."
+        return
+    fi
+
+    echo "start_solana_process: starting the Solana rpc node process"
+    sudo systemctl daemon-reload
+    sudo systemctl enable solana-bigtable-hbase-adapter
+    sudo systemctl start solana-bigtable-hbase-adapter
+}
+
 case $SOLANA_NODE_TYPE in
   validator)
     generate_solana_validator_systemd_unit_file
+    generate_solana_bigtable_hbase_adapter_systemd_unit_file
     start_solana_process
+    start_solana_bigtable_hbase_adapter_process
     ;;
   rpc)
     generate_solana_validator_systemd_unit_file
+    generate_solana_bigtable_hbase_adapter_systemd_unit_file
     start_solana_process
+    start_solana_bigtable_hbase_adapter_process
     ;;
   literpc)
     generate_solana_literpc_systemd_unit_file

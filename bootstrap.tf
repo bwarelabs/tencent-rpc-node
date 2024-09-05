@@ -22,6 +22,7 @@ resource "tencentcloud_tat_command" "solana-setup-node" {
     "solana_network" : var.solana_network,
     "solana_ledger_mount_point" : var.solana_ledger_mount_point,
     "solana_accounts_mount_point" : var.solana_accounts_mount_point,
+    "solana_bigtable_hbase_adapter" : var.solana_bigtable_hbase_adapter,
   })
 }
 
@@ -56,5 +57,6 @@ resource "tencentcloud_tat_command" "solana-configure-process" {
     "solana_accounts_mount_point" : var.solana_accounts_mount_point,
     "solana_log_location" : var.solana_log_location,
     "solana_hbase_cluster_ip": var.solana_hbase_cluster_ip,
+    "solana_bigtable_hbase_adapter" : var.solana_bigtable_hbase_adapter,
   })
 }

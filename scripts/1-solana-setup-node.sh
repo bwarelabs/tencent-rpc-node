@@ -7,6 +7,7 @@ SOLANA_KEYS_DIRECTORY={{solana_keys_directory}}
 SOLANA_CLI_VERSION={{solana_cli_version}}
 SOLANA_LEDGER_MOUNT_POINT={{solana_ledger_mount_point}}
 SOLANA_ACCOUNTS_MOUNT_POINT={{solana_accounts_mount_point}}
+SOLANA_BIGTABLE_HBASE_ADAPTER={{solana_bigtable_hbase_adapter}}
 
 case {{solana_network}} in
   mainnet-beta)
@@ -31,27 +32,27 @@ install_machine_packages() {
 }
 
 install_solana_cli() {
-    if [ ! -f /usr/local/bin/solana-validator ]; then
+    if [ -f /usr/local/bin/solana-validator ]; then
         echo "install_solana_cli: Solana cli already installed."
         return
     fi
 
     echo "install_solana_cli: installing the Solana cli in $SOLANA_CLI_DIRECTORY"
-    mkdir -p $SOLANA_CLI_DIRECTORY
     cd $SOLANA_CLI_DIRECTORY
 
     sudo -u $SOLANA_SYSTEM_USER sh -c "$(curl -sSfL https://release.solana.com/$SOLANA_CLI_VERSION/install)"
     export PATH="/home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin:$PATH" >> /home/${SOLANA_SYSTEM_USER}/.bash_profile
     export PATH="/home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin:$PATH"
     ln -s /home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin/solana-validator /usr/local/bin/solana-validator
+    ln -s /home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin/solana /usr/local/bin/solana
     chown $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER /usr/local/bin/solana-validator
 }
 
 verify_solana_cli() {
     solana_path=$(which solana)
     echo "verify_solana_cli: checking Solana cli: $solana_path"
-    solana config set --url $SOLANA_NETWORK
-    solana config get
+    sudo -u $SOLANA_SYSTEM_USER $solana_path config set --url $SOLANA_NETWORK
+    sudo -u $SOLANA_SYSTEM_USER $solana_path config get
     echo "verify_solana_cli: configured $SOLANA_NETWORK for the Solana network"
 }
 
@@ -84,9 +85,10 @@ create_solana_user() {
     echo "create_solana_user: creating Solana system user: $SOLANA_SYSTEM_USER"
     adduser -m $SOLANA_SYSTEM_USER
 
+    mkdir -p $SOLANA_CLI_DIRECTORY
     chown -R $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER $SOLANA_CLI_DIRECTORY
 
-    usermod -aG sudo $SOLANA_SYSTEM_USER
+    usermod -aG wheel $SOLANA_SYSTEM_USER
     echo "$SOLANA_SYSTEM_USER ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/$SOLANA_SYSTEM_USER
 }
 
@@ -130,6 +132,17 @@ install_literpc() {
   chmod +x /usr/local/bin/solana-lite-rpc
 }
 
+install_bigtable_adapter() {
+  if [[ -f /usr/local/bin/solana-bigtable-hbase-adapter-server || $SOLANA_BIGTABLE_HBASE_ADAPTER != "true" ]]; then
+    echo "install_bigtable_adapter: Solana bigtable adapter already installed or not enabled."
+    return
+  fi
+
+  curl -sSfL https://github.com/bwarelabs/solana-bigtable-hbase-adapter/releases/download/v0.0.1/solana-bigtable-hbase-adapter-server \
+    -o /usr/local/bin/solana-bigtable-hbase-adapter-server
+  chmod +x /usr/local/bin/solana-bigtable-hbase-adapter-server
+}
+
 # RPC NODE
 setup_rpc_node() {
     echo "configuring rpc node"
@@ -150,13 +163,17 @@ case $SOLANA_NODE_TYPE in
     create_vote_account
     configure_ledger_drive
     configure_accountsdb_drive
+    install_bigtable_adapter
     ;;
   rpc)
     echo "solana node will be of type: rpc"
     install_solana_cli
     verify_solana_cli
     generate_solana_keys
+    configure_ledger_drive
+    configure_accountsdb_drive
     setup_rpc_node
+    install_bigtable_adapter
     ;;
   literpc)
     echo "solana node will be of type: literpc"
