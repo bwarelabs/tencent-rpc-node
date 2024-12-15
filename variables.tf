@@ -106,7 +106,7 @@ variable "system_disk_type" {
 variable "system_disk_size" {
   type        = number
   description = "The instace system disk size"
-  default     = 50
+  default     = 100
 }
 
 # LEDGER DISK
@@ -181,7 +181,7 @@ variable "solana_accounts_mount_point" {
 variable "solana_cli_version" {
   type        = string
   description = "Solana CLI version"
-  default     = "v1.18.22"
+  default     = "v2.1.6"
 }
 
 variable "solana_network" {
