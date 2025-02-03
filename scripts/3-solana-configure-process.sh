@@ -70,7 +70,7 @@ SOLANA_HBASE_CLUSTER_IP={{solana_hbase_cluster_ip}}
 generate_solana_validator_systemd_unit_file() {
     echo "generate_systemd_unit_file: generating Solana cli"
 
-    cmd="/usr/local/bin/solana-validator \
+    cmd="/usr/local/bin/agave-validator \
 --identity $SOLANA_IDENTITY \
 --ledger $SOLANA_LEDGER_MOUNT_POINT \
 --accounts $SOLANA_ACCOUNTS_MOUNT_POINT \
@@ -110,7 +110,7 @@ generate_solana_validator_systemd_unit_file() {
     fi
 
     echo "generate_systemd_unit_file: generating systemd file for Solana process"
-    cat <<EOF | sudo tee /etc/systemd/system/solana-validator.service
+    cat <<EOF | sudo tee /etc/systemd/system/agave-validator.service
 [Unit]
 Description=Solana Validator Service
 After=network.target
@@ -186,8 +186,8 @@ EOF
 start_solana_process() {
     echo "start_solana_process: starting the Solana rpc node process"
     sudo systemctl daemon-reload
-    sudo systemctl enable solana-validator
-    sudo systemctl start solana-validator
+    sudo systemctl enable agave-validator
+    sudo systemctl start agave-validator
 }
 
 start_solana_literpc_process() {

@@ -32,7 +32,7 @@ install_machine_packages() {
 }
 
 install_solana_cli() {
-    if [ -f /usr/local/bin/solana-validator ]; then
+    if [ -f /usr/local/bin/agave-validator ]; then
         echo "install_solana_cli: Solana cli already installed."
         return
     fi
@@ -40,12 +40,12 @@ install_solana_cli() {
     echo "install_solana_cli: installing the Solana cli in $SOLANA_CLI_DIRECTORY"
     cd $SOLANA_CLI_DIRECTORY
 
-    sudo -u $SOLANA_SYSTEM_USER sh -c "$(curl -sSfL https://release.solana.com/$SOLANA_CLI_VERSION/install)"
+    sudo -u $SOLANA_SYSTEM_USER sh -c "$(curl -sSfL https://release.anza.xyz/$SOLANA_CLI_VERSION/install)"
     export PATH="/home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin:$PATH" >> /home/${SOLANA_SYSTEM_USER}/.bash_profile
     export PATH="/home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin:$PATH"
-    ln -s /home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin/solana-validator /usr/local/bin/solana-validator
+    ln -s /home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin/agave-validator /usr/local/bin/agave-validator
     ln -s /home/$SOLANA_SYSTEM_USER/.local/share/solana/install/active_release/bin/solana /usr/local/bin/solana
-    chown $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER /usr/local/bin/solana-validator
+    chown $SOLANA_SYSTEM_USER:$SOLANA_SYSTEM_USER /usr/local/bin/agave-validator
 }
 
 verify_solana_cli() {
