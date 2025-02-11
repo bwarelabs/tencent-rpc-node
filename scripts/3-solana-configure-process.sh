@@ -159,6 +159,16 @@ generate_solana_bigtable_hbase_adapter_systemd_unit_file() {
         return
     fi
 
+    echo "generate_systemd_unit_file: ensuring correct permissions for Solana adapter"
+
+    if [ -f "/usr/local/bin/solana-bigtable-hbase-adapter-server" ]; then
+        sudo chown sol:sol /usr/local/bin/solana-bigtable-hbase-adapter-server
+        sudo chmod 750 /usr/local/bin/solana-bigtable-hbase-adapter-server
+    else
+        echo "Error: solana-bigtable-hbase-adapter-server binary not found in /usr/local/bin/"
+        return 1
+    fi
+
     echo "generate_systemd_unit_file: generating Solana cli"
 
     cmd="/usr/local/bin/solana-bigtable-hbase-adapter-server"
