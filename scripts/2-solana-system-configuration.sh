@@ -1,6 +1,6 @@
 system_tunning() {
     echo "tunning system"
-    cat <<EOF > /etc/sysctl.d/21-solana-validator.conf
+    cat <<EOF > /etc/sysctl.d/21-agave-validator.conf
 # Increase UDP buffer sizes
 net.core.rmem_default = 134217728
 net.core.rmem_max = 134217728
@@ -14,7 +14,7 @@ vm.max_map_count = 1000000
 fs.nr_open = 1000000
 EOF
 
-    sysctl -p /etc/sysctl.d/21-solana-validator.conf
+    sysctl -p /etc/sysctl.d/21-agave-validator.conf
 }
 
 system_tunning

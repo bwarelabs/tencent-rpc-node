@@ -5,7 +5,7 @@
 variable "image_id" {
   type        = string
   description = "The RPC node image id, if this is provided then it will override other image parameters below"
-  default     = "img-eb30mz89"
+  default     = "img-6n21msk1"
 }
 
 variable "image_type" {
@@ -32,7 +32,7 @@ variable "instance_count" {
 
 variable "instance_name" {
   type        = string
-  description = "The instace name prefix"
+  description = "The instance name prefix"
   default     = "solana"
 }
 
@@ -44,7 +44,7 @@ variable "instance_project" {
 
 variable "instance_type" {
   type        = string
-  description = "The instace type"
+  description = "The instance type"
   default     = "SA2.MEDIUM8"
 }
 
@@ -99,26 +99,26 @@ variable "instance_tags" {
 
 variable "system_disk_type" {
   type        = string
-  description = "The instace system disk type"
+  description = "The instance system disk type"
   default     = "CLOUD_PREMIUM"
 }
 
 variable "system_disk_size" {
   type        = number
-  description = "The instace system disk size"
-  default     = 50
+  description = "The instance system disk size"
+  default     = 100
 }
 
 # LEDGER DISK
 variable "ledger_disk_type" {
   type        = string
-  description = "The instace ledger disk type"
+  description = "The instance ledger disk type"
   default     = "CLOUD_PREMIUM"
 }
 
 variable "ledger_disk_size" {
   type        = number
-  description = "The instace ledger disk size"
+  description = "The instance ledger disk size"
   default     = 50
 }
 
@@ -131,13 +131,13 @@ variable "ledger_disk_encrypt" {
 # ACCOUNTS DISK
 variable "accounts_disk_type" {
   type        = string
-  description = "The instace accounts disk type"
+  description = "The instance accounts disk type"
   default     = "CLOUD_PREMIUM"
 }
 
 variable "accounts_disk_size" {
   type        = number
-  description = "The instace accounts disk size"
+  description = "The instance accounts disk size"
   default     = 50
 }
 
@@ -181,7 +181,7 @@ variable "solana_accounts_mount_point" {
 variable "solana_cli_version" {
   type        = string
   description = "Solana CLI version"
-  default     = "v1.18.22"
+  default     = "v2.0.9"
 }
 
 variable "solana_network" {
